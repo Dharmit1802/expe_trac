@@ -14,11 +14,7 @@ function App() {
 
         {/* <Route path='/' element={<Landing></Landing>}></Route> */}
 
-        <Route path='/dashboard' element={
-        
-          <Dashboard></Dashboard>
-        
-        }></Route>
+        <Route path='/dashboard' element={<Dashboard></Dashboard>}></Route>
 
         <Route path='/' element={<Login></Login>}></Route>
 

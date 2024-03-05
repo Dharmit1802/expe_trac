@@ -1,8 +1,42 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import CategoryFilter from './CategoryFilter';
 import ExpenseList from "./ExpenseList"
 
 export default function Dashboard() {
+
+  const [userData, setUserData] = useState(null);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          throw new Error('No token found');
+        }
+
+        const response = await fetch('http://localhost:3000/api/v1/dashboard', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': token,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch data');
+        }
+
+        const data = await response.json();
+        console.log(data);
+        setUserData(data.user.id);
+      } catch (error) {
+        console.error(error.message);
+        // Handle error, show error message, etc.
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const data = [
     {
@@ -25,6 +59,7 @@ export default function Dashboard() {
 
   const [showaddexpense, SetShowExpense] = useState(false);
   const [expenses, setExpenses] = useState(data);
+  const [user,setUser] = useState("");
 
   const [formData, setFormData] = useState({
    title : "",
@@ -63,8 +98,17 @@ export default function Dashboard() {
     showaddexpense ? SetShowExpense(false) : SetShowExpense(true);
   }
 
-  function handlesubmit(e){
+  async function handlesubmit(e){
     e.preventDefault();
+  
+    const res = await fetch("http://localhost:3000/api/v1/expense",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+      },
+      body:JSON.stringify({...formData,userData})
+    })
+
   }
 
   return (
@@ -87,7 +131,7 @@ export default function Dashboard() {
         <div className='flex w-full flex-col md:gap-y-0 gap-y-3 md:flex-row md:gap-x-[120px]'> 
           <div className='flex gap-2 items-center'>
             <label for="title" className="capitalize">title:</label>
-            <input id='title' name="title" value={formData.title} type="text" maxlength="50" placeholder="title here" onChange={handleChange} className='rounded-full border-gray-900 text-black outline-1 px-4 py-2 w-full md:w-[35rem] bg-gray-300'/>
+            <input id='title' name="title" value={formData.title} type="text" maxLength="50" placeholder="title here" onChange={handleChange} className='rounded-full border-gray-900 text-black outline-1 px-4 py-2 w-full md:w-[35rem] bg-gray-300'/>
           </div>
 
           <div className='flex gap-2 items-center'>

@@ -1,30 +1,50 @@
-import React, { useState } from 'react'
+import React, { useState} from 'react';
+import { unstable_HistoryRouter, useHistory } from 'react-router-dom';
 import "./Login.css";
 import { useNavigate } from "react-router-dom";
 
 
 const Login = () => {
   const navigate = useNavigate();
+ 
+ 
   const signup = () => {
     navigate("/signup");
   };
-
-  const handlelogin = async()=>{
-    const res = await fetch("http://localhost:3000/api/v1/login",{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json",
-      },
-      body:JSON.stringify(formData)
-    })
-    navigate("/dashboard");
-    console.log(res);
-  }
-
   const [formData, setFormData] = useState({
     email : "",
     password : "",
    });
+
+  const handlelogin = async ()=>{
+    
+    try {
+      const response = await fetch('http://localhost:3000/api/v1/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Invalid credentials');
+      }
+
+      const { token } = await response.json();
+      console.log(token);
+
+      // Store token in localStorage or session storage
+      localStorage.setItem('token', token);
+
+      // Redirect to dashboard
+      navigate('/dashboard');
+    } catch (error) {
+      console.error(error.message);
+      // Handle error, show error message, etc.
+    }
+  }
+
   
    console.log(formData);
   
@@ -75,7 +95,7 @@ const Login = () => {
           </div>
           <div className="actions">
             
-            <button className='examplgmailcom sign-in-wrapper'>Sign in</button>
+            <button onClick={handlelogin} className='examplgmailcom sign-in-wrapper'>Sign in</button>
             
             <div className="line-parent">
               <div className="frame-child" />
@@ -107,7 +127,7 @@ const Login = () => {
             <div className="navigation-actions">
               <div className="button2">
                 <div className="button-base2">
-                  <button onClick={handlelogin} className="text5">Login</button>
+                  <button className="text5">Login</button>
                 </div>
               </div>
                <button className='sign-up-wrapper' onClick={signup} >Sign up</button>

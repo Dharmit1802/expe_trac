@@ -4,15 +4,20 @@ import { useNavigate } from 'react-router-dom';
 
 const Signup = () => {
   const navigate = useNavigate();
-  const submit = async() => {
-    const res = await fetch("http://localhost:3000/api/v1/signup",{
+  const submit = async () => {
+    const res =await fetch("http://localhost:3000/api/v1/signup",{
       method:"POST",
       headers:{
         "Content-Type":"application/json",
       },
       body:JSON.stringify(formData)
-    })
-    navigate('/dashboard');
+    
+  });
+  
+
+    navigate("/");
+  
+   
     console.log(res);
   };
 
@@ -98,7 +103,7 @@ const Signup = () => {
           </div>
           <div className="actions">
             
-            <button className='examplgmailcom sign-in-wrapper' onClick={submit}>Sign up</button>
+            <button className='examplgmailcom sign-in-wrapper' onClick={submit}>Sign Up</button>
             
             <div className="line-parent">
               <div className="frame-child" />
