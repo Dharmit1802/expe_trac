@@ -5,6 +5,24 @@ import ExpenseList from "./ExpenseList"
 export default function Dashboard() {
 
   const [userData, setUserData] = useState(null);
+  const [expenses, setExpenses] = useState([]);
+  const [formData, setFormData] = useState({
+    title : "",
+    amount : "",
+    category : "",
+    date : ""
+   });
+
+   
+
+   function handleChange(event) {
+    const { name, value, checked, type } = event.target;
+    
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  }
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -28,15 +46,33 @@ export default function Dashboard() {
 
         const data = await response.json();
         console.log(data);
+
+        const expensesResponse = await fetch('http://localhost:3000/api/v1/getexpense', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': token,
+          },
+        });
+
+        if (!expensesResponse.ok) {
+          throw new Error('Failed to fetch expenses');
+        }
+
+        const expensesData = await expensesResponse.json();
+        setExpenses(expensesData.expenses);
         setUserData(data.user.id);
+        setFormData((prev)=>({...prev,user:userData}));
       } catch (error) {
         console.error(error.message);
         // Handle error, show error message, etc.
       }
     };
 
+    
+
     fetchUserData();
-  }, []);
+  }, [expenses]);
 
   const data = [
     {
@@ -58,25 +94,11 @@ export default function Dashboard() {
   ]
 
   const [showaddexpense, SetShowExpense] = useState(false);
-  const [expenses, setExpenses] = useState(data);
   const [user,setUser] = useState("");
 
-  const [formData, setFormData] = useState({
-   title : "",
-   amount : "",
-   category : "",
-   date : ""
-  });
+  
 
   console.log(formData);
-
-  function handleChange(event) {
-    const { name, value, checked, type } = event.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  }
 
   console.log(formData);
 
@@ -100,14 +122,20 @@ export default function Dashboard() {
 
   async function handlesubmit(e){
     e.preventDefault();
+    
   
-    const res = await fetch("http://localhost:3000/api/v1/expense",{
+    const res = await fetch("http://localhost:3000/api/v1/addexpense",{
       method:"POST",
       headers:{
         "Content-Type":"application/json",
       },
-      body:JSON.stringify({...formData,userData})
-    })
+      body:JSON.stringify(formData)
+    });
+
+    
+
+    console.log(res);
+    console.log(formData);
 
   }
 

@@ -5,7 +5,8 @@ const router = express.Router();
 
 const { login, signup } = require("../controller/Auth");
 const {addExpense} = require('../controller/AddExpense');
-const {auth} = require('../middlewares/auth')
+const {auth} = require('../middlewares/auth');
+const {getExpense} = require('../controller/getExpense')
 
 router.post("/login",login);
 router.post("/signup", signup);
@@ -28,6 +29,8 @@ router.get('/dashboard', auth, (req, res) => {
   });
   
 router.post("/addexpense", addExpense);
+
+router.get('/getexpense', getExpense);
 
 
 
